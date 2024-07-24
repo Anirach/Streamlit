@@ -22,7 +22,7 @@ st.sidebar.header("Filter Options")
 species_filter = st.sidebar.multiselect(
     "Select Species",
     options=df['species'].unique(),
-    default=df['species'].unique()  # Default to all species
+    default=list(df['species'].unique())  # Ensure this is a list
 )
 
 # Filter the DataFrame based on user selection
