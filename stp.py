@@ -1,22 +1,47 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from sklearn.datasets import load_iris
 
-# Load sample data
-@st.cache
+# Load the Iris dataset
+@st.cache_data
 def load_data():
-    url = "https://people.sc.fsu.edu/~jburkardt/data/csv/airtravel.csv"
-    return pd.read_csv(url)
+    iris = load_iris()
+    df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+    df['species'] = pd.Categorical.from_codes(iris.target, iris.target_names)
+    return df
 
+# Load data
 df = load_data()
 
 # Title of the app
-st.title("Air Travel Time Series Plot")
+st.title("Iris Dataset Visualization")
 
-# Display the dataframe
-st.write("This chart shows the number of air passengers traveled in each month from 1949 to 1960.")
-st.dataframe(df)
+# Sidebar for user input
+st.sidebar.header("Filter Options")
+species_filter = st.sidebar.multiselect(
+    "Select Species",
+    options=df['species'].unique(),
+    default=df['species'].unique()  # Default to all species
+)
 
-# Create a line chart using Plotly
-fig = px.line(df, x="Month", y=df.columns[1:], title="Air Passenger Travel")
+# Filter the DataFrame based on user selection
+filtered_df = df[df['species'].isin(species_filter)]
+
+# Create a scatter plot using Plotly
+fig = px.scatter(
+    filtered_df,
+    x='sepal length (cm)',
+    y='sepal width (cm)',
+    color='species',
+    title="Iris Sepal Dimensions",
+    hover_data=['petal length (cm)', 'petal width (cm)'],
+    labels={'species': 'Iris Species'}
+)
+
+# Display the plot
 st.plotly_chart(fig, use_container_width=True)
+
+# Display the filtered data
+st.subheader("Filtered Data")
+st.dataframe(filtered_df)
