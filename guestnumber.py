@@ -12,7 +12,7 @@ while ntries < 7 and yourguess != mynumber:
     yourguess = int(input(msg))
     if yourguess > mynumber:
         print("--> too high")
-    else:
+    elif yourguess < mynumber:
         print("--> too low")
     ntries += 1
 
